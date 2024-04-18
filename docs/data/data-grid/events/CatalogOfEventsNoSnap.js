@@ -82,7 +82,7 @@ const COLUMNS = [
     headerName: 'Available on',
     width: 100,
     align: 'center',
-    valueGetter: ({ row }) => {
+    valueGetter: (value, row) => {
       if (row.projects.includes('x-data-grid')) {
         return 'x-data-grid';
       }
@@ -141,8 +141,8 @@ export default function CatalogOfEventsNoSnap() {
       getRowHeight={() => 'auto'}
       disableRowSelection
       hideFooter
-      components={{
-        Toolbar,
+      slots={{
+        toolbar: Toolbar,
       }}
       sx={{
         '&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell': { py: '8px' },

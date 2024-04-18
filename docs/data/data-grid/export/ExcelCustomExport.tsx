@@ -3,6 +3,7 @@ import {
   DataGridPremium,
   GridToolbar,
   GridExceljsProcessInput,
+  GridColDef,
 } from '@mui/x-data-grid-premium';
 
 const rows = [
@@ -225,7 +226,7 @@ const rows = [
   },
 ];
 
-const columns = [
+const columns: GridColDef[] = [
   {
     field: 'plan',
     type: 'singleSelect',
@@ -288,8 +289,8 @@ export default function ExcelCustomExport() {
         columns={columns}
         groupingColDef={groupingColDef}
         defaultGroupingExpansionDepth={-1}
-        components={{ Toolbar: GridToolbar }}
-        componentsProps={{ toolbar: { excelOptions } }}
+        slots={{ toolbar: GridToolbar }}
+        slotProps={{ toolbar: { excelOptions } }}
       />
     </div>
   );

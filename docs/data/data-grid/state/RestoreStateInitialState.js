@@ -1,5 +1,4 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -23,19 +22,15 @@ function GridCustomToolbar({ syncState }) {
       <GridToolbarDensitySelector />
       <Button
         size="small"
-        startIcon={<rootProps.components.ColumnSelectorIcon />}
+        startIcon={<rootProps.slots.columnSelectorIcon />}
         onClick={() => syncState(apiRef.current.exportState())}
-        {...rootProps.componentsProps?.baseButton}
+        {...rootProps.slotProps?.baseButton}
       >
         Recreate the 2nd grid
       </Button>
     </GridToolbarContainer>
   );
 }
-
-GridCustomToolbar.propTypes = {
-  syncState: PropTypes.func.isRequired,
-};
 
 export default function RestoreStateInitialState() {
   const { data, loading } = useDemoData({
@@ -51,7 +46,6 @@ export default function RestoreStateInitialState() {
 
   const syncState = React.useCallback((newInitialState) => {
     setSavedState((prev) => ({
-      ...prev,
       count: prev.count + 1,
       initialState: newInitialState,
     }));
@@ -63,8 +57,8 @@ export default function RestoreStateInitialState() {
         <DataGridPro
           {...data}
           loading={loading}
-          components={{ Toolbar: GridCustomToolbar }}
-          componentsProps={{ toolbar: { syncState } }}
+          slots={{ toolbar: GridCustomToolbar }}
+          slotProps={{ toolbar: { syncState } }}
         />
       </Box>
       <Box sx={{ height: 300 }}>

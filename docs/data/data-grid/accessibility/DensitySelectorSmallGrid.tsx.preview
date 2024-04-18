@@ -1,7 +1,11 @@
 <DataGrid
   {...data}
-  density="compact"
-  components={{
-    Toolbar: CustomToolbar,
+  density={density}
+  onDensityChange={(newDensity) => {
+    console.info(`Density updated to: ${newDensity}`);
+    setDensity(newDensity);
+  }}
+  slots={{
+    toolbar: CustomToolbar,
   }}
 />

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
 import {
   DataGridPro,
   GRID_CHECKBOX_SELECTION_FIELD,
@@ -133,7 +132,7 @@ const AntDesignStyledDataGridPro = styled(DataGridPro)(({ theme }) => ({
   },
 }));
 
-const StyledBox = styled(Box)(({ theme }) => ({
+const StyledBox = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   height: 600,
@@ -333,16 +332,15 @@ export default function FullFeaturedDemo() {
       />
       <DataGridComponent
         {...data}
-        components={{
-          Toolbar: GridToolbar,
+        slots={{
+          toolbar: GridToolbar,
         }}
-        componentsProps={{
+        slotProps={{
           toolbar: { showQuickFilter: true },
         }}
         loading={loading}
         checkboxSelection
         disableRowSelectionOnClick
-        rowThreshold={0}
         initialState={{
           ...data.initialState,
           pinnedColumns: { left: [GRID_CHECKBOX_SELECTION_FIELD, 'desk'] },

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {
   DataGrid,
+  GridSlots,
   GridToolbarContainer,
   GridToolbarFilterButton,
 } from '@mui/x-data-grid';
@@ -34,10 +35,10 @@ export default function CustomFilterPanelPosition() {
     <div style={{ height: 400, width: '100%' }}>
       <DataGrid
         {...data}
-        components={{
-          Toolbar: CustomToolbar,
+        slots={{
+          toolbar: CustomToolbar as GridSlots['toolbar'],
         }}
-        componentsProps={{
+        slotProps={{
           panel: {
             anchorEl: filterButtonEl,
           },

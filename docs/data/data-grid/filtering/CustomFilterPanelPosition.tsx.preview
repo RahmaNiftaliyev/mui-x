@@ -1,9 +1,9 @@
 <DataGrid
   {...data}
-  components={{
-    Toolbar: CustomToolbar,
+  slots={{
+    toolbar: CustomToolbar as GridSlots['toolbar'],
   }}
-  componentsProps={{
+  slotProps={{
     panel: {
       anchorEl: filterButtonEl,
     },
