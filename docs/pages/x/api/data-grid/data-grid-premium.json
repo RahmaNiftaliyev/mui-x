@@ -73,6 +73,7 @@
       "type": { "name": "enum", "description": "'cell'<br>&#124;&nbsp;'row'" },
       "default": "\"cell\""
     },
+    "estimatedRowCount": { "type": { "name": "number" } },
     "experimentalFeatures": {
       "type": { "name": "shape", "description": "{ warnIfFocusStateIsNotSynced?: bool }" }
     },
@@ -406,6 +407,13 @@
         "describedArgs": ["params", "event", "details"]
       }
     },
+    "onPaginationMetaChange": {
+      "type": { "name": "func" },
+      "signature": {
+        "type": "function(paginationMeta: GridPaginationMeta) => void",
+        "describedArgs": ["paginationMeta"]
+      }
+    },
     "onPaginationModelChange": {
       "type": { "name": "func" },
       "signature": {
@@ -527,6 +535,7 @@
       "default": "[25, 50, 100]"
     },
     "pagination": { "type": { "name": "bool" }, "default": "false" },
+    "paginationMeta": { "type": { "name": "shape", "description": "{ hasNextPage?: bool }" } },
     "paginationMode": {
       "type": { "name": "enum", "description": "'client'<br>&#124;&nbsp;'server'" },
       "default": "\"client\""
@@ -656,6 +665,12 @@
       "class": null
     },
     {
+      "name": "columnHeaderSortIcon",
+      "description": "Sort icon component rendered in each column header.",
+      "default": "GridColumnHeaderSortIcon",
+      "class": null
+    },
+    {
       "name": "columnMenu",
       "description": "Column menu component rendered by clicking on the 3 dots \"kebab\" icon in column headers.",
       "default": "GridColumnMenu",
@@ -664,7 +679,7 @@
     {
       "name": "columnHeaders",
       "description": "Component responsible for rendering the column headers.",
-      "default": "DataGridColumnHeaders",
+      "default": "GridColumnHeaders",
       "class": "MuiDataGridPremium-columnHeaders"
     },
     {

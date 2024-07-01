@@ -28,19 +28,18 @@ import {
   renderDigitalClockTimeView,
   renderMultiSectionDigitalClockTimeView,
 } from '../timeViewRenderers';
-import {
-  DefaultizedProps,
-  UsePickerViewsProps,
-  VIEW_HEIGHT,
-  isDatePickerView,
-  isInternalTimeView,
-} from '../internals';
+
 import {
   multiSectionDigitalClockClasses,
   multiSectionDigitalClockSectionClasses,
 } from '../MultiSectionDigitalClock';
 import { digitalClockClasses } from '../DigitalClock';
 import { DesktopDateTimePickerLayout } from './DesktopDateTimePickerLayout';
+import { VIEW_HEIGHT } from '../internals/constants/dimensions';
+import { DefaultizedProps } from '../internals/models/helpers';
+import { UsePickerViewsProps } from '../internals/hooks/usePicker/usePickerViews';
+import { isInternalTimeView } from '../internals/utils/time-utils';
+import { isDatePickerView } from '../internals/utils/date-utils';
 
 const rendererInterceptor = function rendererInterceptor<
   TDate extends PickerValidDate,
@@ -238,7 +237,7 @@ const DesktopDateTimePicker = React.forwardRef(function DesktopDateTimePicker<
 DesktopDateTimePicker.propTypes = {
   // ----------------------------- Warning --------------------------------
   // | These PropTypes are generated from the TypeScript type definitions |
-  // | To update them edit the TypeScript types and run "yarn proptypes"  |
+  // | To update them edit the TypeScript types and run "pnpm proptypes"  |
   // ----------------------------------------------------------------------
   /**
    * 12h/24h view for hour selection clock.
@@ -391,7 +390,9 @@ DesktopDateTimePicker.propTypes = {
   /**
    * Callback fired when the value is accepted.
    * @template TValue The value type. Will be either the same type as `value` or `null`. Can be in `[start, end]` format in case of range value.
+   * @template TError The validation error type. Will be either `string` or a `null`. Can be in `[start, end]` format in case of range value.
    * @param {TValue} value The value that was just accepted.
+   * @param {FieldChangeHandlerContext<TError>} context The context containing the validation result of the current value.
    */
   onAccept: PropTypes.func,
   /**
@@ -605,7 +606,7 @@ DesktopDateTimePicker.propTypes = {
   /**
    * Define custom view renderers for each section.
    * If `null`, the section will only have field editing.
-   * If `undefined`, internally defined view will be the used.
+   * If `undefined`, internally defined view will be used.
    */
   viewRenderers: PropTypes.shape({
     day: PropTypes.func,

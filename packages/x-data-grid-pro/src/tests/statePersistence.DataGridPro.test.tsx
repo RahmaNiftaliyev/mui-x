@@ -10,7 +10,7 @@ import {
   GridRowsProp,
   useGridApiRef,
 } from '@mui/x-data-grid-pro';
-import { createRenderer, screen, act } from '@mui-internal/test-utils';
+import { createRenderer, screen, act } from '@mui/internal-test-utils';
 import { expect } from 'chai';
 import {
   getColumnHeaderCell,
@@ -63,6 +63,7 @@ const FULL_INITIAL_STATE: GridInitialState = {
     },
   },
   pagination: {
+    meta: {},
     paginationModel: { page: 1, pageSize: 2 },
     rowCount: 6,
   },
@@ -126,6 +127,7 @@ describe('<DataGridPro /> - State persistence', () => {
           filterModel: getDefaultGridFilterModel(),
         },
         pagination: {
+          meta: {},
           paginationModel: { page: 0, pageSize: 100 },
           rowCount: 6,
         },
@@ -193,6 +195,7 @@ describe('<DataGridPro /> - State persistence', () => {
           }}
           paginationMode="server"
           rowCount={FULL_INITIAL_STATE.pagination?.rowCount}
+          paginationMeta={FULL_INITIAL_STATE.pagination?.meta}
           pinnedColumns={FULL_INITIAL_STATE.pinnedColumns}
           density={FULL_INITIAL_STATE.density}
           // Some portable states don't have a controllable model

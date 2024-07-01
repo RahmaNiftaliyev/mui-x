@@ -6,12 +6,12 @@ import {
 } from '@mui/utils';
 import useLazyRef from '@mui/utils/useLazyRef';
 import useTimeout from '@mui/utils/useTimeout';
+import { useResizeObserver } from '@mui/x-internals/useResizeObserver';
 import { useTheme, Theme } from '@mui/material/styles';
 import type { GridPrivateApiCommunity } from '../../../models/api/gridApiCommunity';
 import { useGridPrivateApiContext } from '../../utils/useGridPrivateApiContext';
 import { useGridRootProps } from '../../utils/useGridRootProps';
 import { useGridSelector } from '../../utils/useGridSelector';
-import { useResizeObserver } from '../../utils/useResizeObserver';
 import { useRunOnce } from '../../utils/useRunOnce';
 import {
   gridVisibleColumnDefinitionsSelector,
@@ -85,7 +85,14 @@ const createScrollCache = (
 });
 type ScrollCache = ReturnType<typeof createScrollCache>;
 
-const isJSDOM = typeof window !== 'undefined' ? /jsdom/.test(window.navigator.userAgent) : false;
+let isJSDOM = false;
+try {
+  if (typeof window !== 'undefined') {
+    isJSDOM = /jsdom/.test(window.navigator.userAgent);
+  }
+} catch (_) {
+  /* ignore */
+}
 
 export const useGridVirtualScroller = () => {
   const apiRef = useGridPrivateApiContext() as React.MutableRefObject<PrivateApiWithInfiniteLoader>;
@@ -482,6 +489,10 @@ export const useGridVirtualScroller = () => {
           {...rowProps}
         />,
       );
+
+      if (isNotVisible) {
+        return;
+      }
 
       const panel = panels.get(id);
       if (panel) {

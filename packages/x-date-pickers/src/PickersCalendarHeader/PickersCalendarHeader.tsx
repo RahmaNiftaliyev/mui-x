@@ -265,7 +265,7 @@ const PickersCalendarHeader = React.forwardRef(function PickersCalendarHeader<
 PickersCalendarHeader.propTypes = {
   // ----------------------------- Warning --------------------------------
   // | These PropTypes are generated from the TypeScript type definitions |
-  // | To update them edit the TypeScript types and run "yarn proptypes"  |
+  // | To update them edit the TypeScript types and run "pnpm proptypes"  |
   // ----------------------------------------------------------------------
   /**
    * Override or extend the styles applied to the component.
@@ -281,6 +281,10 @@ PickersCalendarHeader.propTypes = {
    * @default `${adapter.formats.month} ${adapter.formats.year}`
    */
   format: PropTypes.string,
+  /**
+   * Id of the calendar text element.
+   * It is used to establish an `aria-labelledby` relationship with the calendar `grid` element.
+   */
   labelId: PropTypes.string,
   maxDate: PropTypes.object.isRequired,
   minDate: PropTypes.object.isRequired,

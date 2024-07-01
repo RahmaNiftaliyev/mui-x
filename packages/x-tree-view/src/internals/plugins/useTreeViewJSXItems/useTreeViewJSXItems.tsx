@@ -16,7 +16,7 @@ import {
 } from '../useTreeViewItems/useTreeViewItems.utils';
 import type { TreeItemProps } from '../../../TreeItem';
 import type { TreeItem2Props } from '../../../TreeItem2';
-import { UseTreeViewIdSignature } from '../useTreeViewId';
+import { TreeViewItemDepthContext } from '../../TreeViewItemDepthContext';
 
 export const useTreeViewJSXItems: TreeViewPlugin<UseTreeViewJSXItemsSignature> = ({
   instance,
@@ -46,6 +46,24 @@ export const useTreeViewJSXItems: TreeViewPlugin<UseTreeViewJSXItemsSignature> =
         },
       };
     });
+
+    return () => {
+      setState((prevState) => {
+        const newItemMetaMap = { ...prevState.items.itemMetaMap };
+        const newItemMap = { ...prevState.items.itemMap };
+        delete newItemMetaMap[item.id];
+        delete newItemMap[item.id];
+        return {
+          ...prevState,
+          items: {
+            ...prevState.items,
+            itemMetaMap: newItemMetaMap,
+            itemMap: newItemMap,
+          },
+        };
+      });
+      publishTreeViewEvent(instance, 'removeItem', { id: item.id });
+    };
   });
 
   const setJSXItemsOrderedChildrenIds = (parentId: string | null, orderedChildrenIds: string[]) => {
@@ -67,24 +85,6 @@ export const useTreeViewJSXItems: TreeViewPlugin<UseTreeViewJSXItemsSignature> =
     }));
   };
 
-  const removeJSXItem = useEventCallback((itemId: string) => {
-    setState((prevState) => {
-      const newItemMetaMap = { ...prevState.items.itemMetaMap };
-      const newItemMap = { ...prevState.items.itemMap };
-      delete newItemMetaMap[itemId];
-      delete newItemMap[itemId];
-      return {
-        ...prevState,
-        items: {
-          ...prevState.items,
-          itemMetaMap: newItemMetaMap,
-          itemMap: newItemMap,
-        },
-      };
-    });
-    publishTreeViewEvent(instance, 'removeItem', { id: itemId });
-  });
-
   const mapFirstCharFromJSX = useEventCallback((itemId: string, firstChar: string) => {
     instance.updateFirstCharMap((firstCharMap) => {
       firstCharMap[itemId] = firstChar;
@@ -103,11 +103,17 @@ export const useTreeViewJSXItems: TreeViewPlugin<UseTreeViewJSXItemsSignature> =
   return {
     instance: {
       insertJSXItem,
-      removeJSXItem,
       setJSXItemsOrderedChildrenIds,
       mapFirstCharFromJSX,
     },
   };
+};
+
+const isItemExpandable = (reactChildren: React.ReactNode) => {
+  if (Array.isArray(reactChildren)) {
+    return reactChildren.length > 0 && reactChildren.some(isItemExpandable);
+  }
+  return Boolean(reactChildren);
 };
 
 const useTreeViewJSXItemsItemPlugin: TreeViewItemPlugin<TreeItemProps | TreeItem2Props> = ({
@@ -115,7 +121,7 @@ const useTreeViewJSXItemsItemPlugin: TreeViewItemPlugin<TreeItemProps | TreeItem
   rootRef,
   contentRef,
 }) => {
-  const { instance } = useTreeViewContext<[UseTreeViewIdSignature, UseTreeViewJSXItemsSignature]>();
+  const { instance } = useTreeViewContext<[UseTreeViewJSXItemsSignature]>();
   const { children, disabled = false, label, itemId, id } = props;
 
   const parentContext = React.useContext(TreeViewChildrenItemContext);
@@ -130,15 +136,7 @@ const useTreeViewJSXItemsItemPlugin: TreeViewItemPlugin<TreeItemProps | TreeItem
   }
   const { registerChild, unregisterChild, parentId } = parentContext;
 
-  const isExpandable = (reactChildren: React.ReactNode) => {
-    if (Array.isArray(reactChildren)) {
-      return reactChildren.length > 0 && reactChildren.some(isExpandable);
-    }
-    return Boolean(reactChildren);
-  };
-
-  const expandable = isExpandable(children);
-
+  const expandable = isItemExpandable(children);
   const pluginContentRef = React.useRef<HTMLDivElement>(null);
   const handleContentRef = useForkRef(pluginContentRef, contentRef);
 
@@ -153,15 +151,13 @@ const useTreeViewJSXItemsItemPlugin: TreeViewItemPlugin<TreeItemProps | TreeItem
   }, [instance, registerChild, unregisterChild, itemId, id]);
 
   React.useEffect(() => {
-    instance.insertJSXItem({
+    return instance.insertJSXItem({
       id: itemId,
       idAttribute: id,
       parentId,
       expandable,
       disabled,
     });
-
-    return () => instance.removeJSXItem(itemId);
   }, [instance, parentId, itemId, expandable, disabled, id]);
 
   React.useEffect(() => {
@@ -182,12 +178,23 @@ const useTreeViewJSXItemsItemPlugin: TreeViewItemPlugin<TreeItemProps | TreeItem
 
 useTreeViewJSXItems.itemPlugin = useTreeViewJSXItemsItemPlugin;
 
-useTreeViewJSXItems.wrapItem = ({ children, itemId }) => (
-  <TreeViewChildrenItemProvider itemId={itemId}>{children}</TreeViewChildrenItemProvider>
-);
+useTreeViewJSXItems.wrapItem = ({ children, itemId }) => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const depthContext = React.useContext(TreeViewItemDepthContext);
+
+  return (
+    <TreeViewChildrenItemProvider itemId={itemId}>
+      <TreeViewItemDepthContext.Provider value={(depthContext as number) + 1}>
+        {children}
+      </TreeViewItemDepthContext.Provider>
+    </TreeViewChildrenItemProvider>
+  );
+};
 
 useTreeViewJSXItems.wrapRoot = ({ children }) => (
-  <TreeViewChildrenItemProvider>{children}</TreeViewChildrenItemProvider>
+  <TreeViewChildrenItemProvider>
+    <TreeViewItemDepthContext.Provider value={0}>{children}</TreeViewItemDepthContext.Provider>
+  </TreeViewChildrenItemProvider>
 );
 
 useTreeViewJSXItems.params = {};
